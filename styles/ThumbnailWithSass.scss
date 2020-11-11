@@ -1,0 +1,10 @@
+.thumbnail {
+  &__image {
+    width: 300px;
+  }
+
+  &__caption {
+    text-align: center;
+    padding: 10px;
+  }
+}
