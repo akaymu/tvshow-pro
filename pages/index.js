@@ -9,6 +9,7 @@ Home.getInitialProps = (context) => {
 
   const { defaultCountry } = cookies.get(context);
   const country = context.query.country || defaultCountry || 'tr';
+  console.log('GET: In pages/index', country);
 
   if (process.browser) {
     Router.replace('/[country]', `/${country}`);

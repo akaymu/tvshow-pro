@@ -1,6 +1,8 @@
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 import cookies from 'nookies';
+import Link from 'next/link';
+import { isAuthenticated } from '../../utils/withAuthorization';
 
 const countries = [
   { code: 'ar', name: 'Argentina' },
@@ -17,7 +19,9 @@ const countries = [
 const Header = () => {
   const router = useRouter();
 
-  const [selectedCountry, setSelectedCountry] = useState(router.query.country);
+  const [selectedCountry, setSelectedCountry] = useState(
+    router.query.country || 'tr'
+  );
 
   const onSelectChange = (e) => {
     setSelectedCountry(e.target.value);
@@ -32,6 +36,30 @@ const Header = () => {
     ));
   };
 
+  const onSignoutClick = () => {
+    cookies.destroy(null, 'token');
+  };
+
+  const renderSignoutLink = () => {
+    if (isAuthenticated()) {
+      return (
+        <Link href="/[country]" as={`/${selectedCountry}`}>
+          <a onClick={onSignoutClick}>Signout</a>
+        </Link>
+      );
+    }
+    return (
+      <div className="authentication-links">
+        <Link href="/signin">
+          <a>Signin</a>
+        </Link>
+        <Link href="/signup">
+          <a>Signup</a>
+        </Link>
+      </div>
+    );
+  };
+
   useEffect(() => {
     cookies.set(null, 'defaultCountry', selectedCountry, {
       maxAge: 30 * 24 * 60 * 60,
@@ -44,12 +72,16 @@ const Header = () => {
       <select value={selectedCountry} onChange={onSelectChange}>
         {renderCountries()}
       </select>
+
+      {renderSignoutLink()}
       <style jsx>{`
         .header {
           padding: 20px;
           background-color: #333;
           color: #fff;
           text-align: center;
+          display: flex;
+          justify-content: space-between;
         }
       `}</style>
     </div>
